@@ -5,9 +5,10 @@ Author: Wilson Wong
 Date: 10-17-2022
 """
 
+from webbrowser import get
 import requests
 from html.parser import HTMLParser
-import json
+import utils
 
 def is_number(s):
     """
@@ -37,11 +38,18 @@ def get_yoox_item(sku,section,gender,size):
     # id 3 is 6, 4 is 6.5, 5 is 7, 6 is 7.5, 7 is 8, 8 is 8.5, 9 is 9, 10 is 9.5, 11 is 10
     # pants size
     # id 4 s 30, id 5 is 31, id 6 is 32
-
+    print(sku)
+    print(section)
+    print(gender)
+    print(size)
+    print(type(size))
+    print(str(is_number(size)))
     if is_number(size) == True:
+        print("it is a number")
         # Shoe sizes are under 15
-        if float(size) < 16.0 and section == "shoes":
+        if float(size) < 16.0:
             size = float(size)
+            print(str(size))
             if size == 6:
                 sizeid = 3
             elif size == 6.5:
@@ -73,7 +81,7 @@ def get_yoox_item(sku,section,gender,size):
             elif size == 13:
                 sizeid = 17
         # pants sizes are usually start at 28 and up
-        if float(size) > 25.0 and section == "clothing":
+        if float(size) > 25.0:
             size = float(size)
             # Very odd but size 26 has an id of 10
             if size == 26:
@@ -107,10 +115,10 @@ def get_yoox_item(sku,section,gender,size):
             sizeid = 7
         elif size == "XXL":
             sizeid = 8
-    else:
+    #else:
         # -1 is as if the size doesn't exist.
-        sizeid = -1
-    
+        #sizeid = -1
+    print(str(sizeid))
     url = "https://www.yoox.com/us/" + sku + "/item#dept=" + section + gender + "&sizeid=" + str(sizeid)
     header={'User-Agent': 'Mozilla/5.0'}
 
@@ -155,6 +163,73 @@ def get_yoox_item(sku,section,gender,size):
         if s.get("id") == sizeid:
             quantity = s.get("quantity")
     # export this as a dictionary
-    result = {"item": description, "url": url, "price": price, "size": size, "quantity": quantity}
+    result = {"item": description, "url": url, "price": price, "size": size, "quantity": quantity, "section": section, "gender": gender, "sku": sku}
 
     return result
+
+def update_yoox_csv(filename):
+    """
+    Loads the yoox csv, then updates/gets all values to update the csv.
+
+    Parameter filename: Valid csv file 'store-csvs/yoox.csv'
+    """
+    
+    yooxlist = utils.import_csv(filename)
+
+    for item in yooxlist[1:]:
+        # Rebuild the dictionary
+        itemdescription = item[0]
+        itemdescription = itemdescription.strip("'")
+        itemurl = item[1]
+        itemprice = item[2]
+        itemsize = item[3]
+        itemsize = itemsize.strip("'")
+        itemquantity = item[4]
+        itemsection = item[5]
+        itemsection = itemsection.strip("'")
+        itemgender = item[6]
+        itemgender = itemgender.strip("'")
+        itemsku = item[7]
+        itemsku = itemsku.strip("'")
+        try:
+            itemlastprice = item[8]
+        except:
+            item.append("")
+        try:
+            itemlowestprice = item[9]
+        except:
+            item.append("")
+        try:
+            itemhighestprice = item[10]
+        except:
+            item.append("")
+        updateditem = get_yoox_item(itemsku,itemsection,itemgender,itemsize)
+       # Check if description is empty. if it is, then this is a new item 
+        if itemdescription == "":
+            item[0] = updateditem.get("item")
+            item[1] = updateditem.get("url")
+            item[2] = updateditem.get("price")
+            item[3] = updateditem.get("size")
+            item[4] = updateditem.get("quantity")
+            item[5] = updateditem.get("section")
+            item[6] = updateditem.get("gender")
+            item[7] = updateditem.get("sku")
+        else:
+            if item[2] != updateditem.get("price"):
+                currentprice = item[2]
+                if item[8] == "":
+                    item[8] = currentprice
+                if item[9] == "":
+                    item[9] = currentprice
+                if item[10] == "":
+                    item[10] = currentprice
+                if currentprice < item[9]:
+                    item[9] = currentprice
+                elif currentprice > item[10]:
+                    item[10] = currentprice
+                item[2] = currentprice
+            item[4] = updateditem.get("quantity")
+    for item in yooxlist:
+        print(item)
+    utils.export_csv(yooxlist,filename)
+
