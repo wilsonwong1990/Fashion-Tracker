@@ -242,3 +242,28 @@ def update_yoox_csv(filename):
         print(item)
     utils.export_csv(yooxlist,filename)
 
+def add_yoox_item_to_track(sku,section,gender,size):
+    """
+    Given a sku from Yoox, retrieve the price, description, and image of the item then append it to the csv for tracking. Gender is needed
+    to see what side of the store to retrieve.
+
+    Parameter sku: A valid sku from yoox.com
+    Parameter section: String of the section of the website it is in
+    Preconditon: valid sections are clothing, shoes, accessories, sale
+    Parameter gender: men or women are valid.
+    Parameter size: Size of the item. If it is shoes, 6-13US are valid. If it's clothing, XXS-XXL, and if it's pants, XXS-XXL or 28-36.
+    """
+
+    newitem = get_yoox_item(sku,section,gender,size)
+    newrow = []
+    newrow.append(newitem.get("item"))
+    newrow.append(newitem.get("url"))
+    newrow.append(newitem.get("price"))
+    newrow.append(newitem.get("size"))
+    newrow.append(newitem.get("quantity"))
+    newrow.append(newitem.get("section"))
+    newrow.append(newitem.get("gender"))
+    newrow.append(newitem.get("sku"))
+    yooxlist = utils.import_csv("store-csvs/yoox.csv")
+    yooxlist.append(newrow)
+    utils.export_csv(yooxlist,"store-csvs/yoox.csv")
