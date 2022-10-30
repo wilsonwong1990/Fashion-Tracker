@@ -206,6 +206,7 @@ def update_yoox_csv(filename):
         updateditem = get_yoox_item(itemsku,itemsection,itemgender,itemsize)
        # Check if description is empty. if it is, then this is a new item 
         if itemdescription == "":
+            print("description is empty")
             item[0] = updateditem.get("item")
             item[1] = updateditem.get("url")
             item[2] = updateditem.get("price")
@@ -214,18 +215,26 @@ def update_yoox_csv(filename):
             item[5] = updateditem.get("section")
             item[6] = updateditem.get("gender")
             item[7] = updateditem.get("sku")
+            item[8] = updateditem.get("price")
+            item[9] = updateditem.get("price")
+            item[10] = updateditem.get("price")
         else:
-            if item[2] != updateditem.get("price"):
-                currentprice = item[2]
+            if float(itemprice) != updateditem.get("price"):
+                print("prices aren't the same")
+                currentprice = updateditem.get("price")
+                print(str(currentprice))
                 if item[8] == "":
                     item[8] = currentprice
-                if item[9] == "":
-                    item[9] = currentprice
-                if item[10] == "":
-                    item[10] = currentprice
+                else:
+                    # If lastprice isn't empty, move the price to this
+                    item[8] = item[2]
+                #if item[9] == "":
+                #    item[9] = currentprice
+                #if item[10] == "":
+                #    item[10] = currentprice
                 if currentprice < item[9]:
                     item[9] = currentprice
-                elif currentprice > item[10]:
+                if currentprice > item[10]:
                     item[10] = currentprice
                 item[2] = currentprice
             item[4] = updateditem.get("quantity")
