@@ -36,7 +36,7 @@ jobs:
           git config pull.rebase false
           git fetch
           git checkout -b "gh-pages"
-          git pull origin "gh-pages"
+          git pull origin "gh-pages" --allow-unrelated-histories
           git add store-csvs/*
           git commit -m "generated"
           git push -u origin "gh-pages"
