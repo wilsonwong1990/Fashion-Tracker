@@ -1,3 +1,5 @@
+
+
 # This workflow will install Python dependencies, run tests and lint with a single version of Python
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
@@ -40,7 +42,8 @@ jobs:
     - name: commit changes back to repository
       run: |
           date > generated.txt
-          git checkout -b "gh-pages"es
+          git checkout -b "gh-pages"
           git add store-csvs/*
           git commit -m "generated"
           git push -u origin "gh-pages"
+
