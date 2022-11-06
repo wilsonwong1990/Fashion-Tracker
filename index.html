@@ -52,6 +52,12 @@
             else return "";
         }
 
+        function image_link(link) {
+            if (link)
+                return "<img src='" + link + "' alt='image'>";
+            else return "";
+        }
+
         CsvToHtmlTable.init({
             csv_path: "store-csvs/yoox.csv",
             element: "table-container",
@@ -64,7 +70,8 @@
                 paging: false
             },
             custom_formatting: [
-                [1, format_link]
+                [1, format_link],
+                [11, image_link]
             ]
         });
     </script>
