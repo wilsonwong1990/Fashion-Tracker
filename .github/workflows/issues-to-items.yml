@@ -27,4 +27,4 @@ jobs:
     - name: Run gh-issues.py
       env:
         Token: ${{ secrets.GITHUB_TOKEN }}
-      run: python Run gh-issues.py
+      run: python gh-issues.py
