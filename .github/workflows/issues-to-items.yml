@@ -1,3 +1,5 @@
+
+
 # This workflow will install Python dependencies, run tests and lint with a single version of Python
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
@@ -24,6 +26,15 @@ jobs:
         python -m pip install --upgrade pip
         pip install pygithub
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Checkout gh-pages branch
+      run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git config pull.rebase false
+          git fetch
+          git checkout -b "gh-pages"
+          git pull origin "gh-pages" --allow-unrelated-histories
+          git checkout -b "main"
     - name: Run gh-issues.py
       env:
         Token: ${{ secrets.GITHUB_TOKEN }}
@@ -31,9 +42,8 @@ jobs:
     - name: commit changes back to repository
       run: |
           date > generated.txt
-          git config user.name github-actions
-          git config user.email github-actions@github.com
           git checkout -b "gh-pages"
           git add store-csvs/*
           git commit -m "generated"
           git push -u origin "gh-pages"
+
