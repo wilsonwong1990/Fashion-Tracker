@@ -38,6 +38,7 @@ def get_yoox_item(sku,section,gender,size):
     # id 3 is 6, 4 is 6.5, 5 is 7, 6 is 7.5, 7 is 8, 8 is 8.5, 9 is 9, 10 is 9.5, 11 is 10
     # pants size
     # id 4 s 30, id 5 is 31, id 6 is 32
+    ## Use `"sizeGuide":` to find the size guides to get a size id
     print(sku)
     print(section)
     print(gender)
