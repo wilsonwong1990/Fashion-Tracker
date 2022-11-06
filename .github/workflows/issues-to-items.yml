@@ -34,7 +34,7 @@ jobs:
           git fetch
           git checkout -b "gh-pages"
           git pull origin "gh-pages" --allow-unrelated-histories
-          git checkout -b "main"
+          git checkout "main"
     - name: Run gh-issues.py
       env:
         Token: ${{ secrets.GITHUB_TOKEN }}
