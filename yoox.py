@@ -150,7 +150,7 @@ def get_yoox_item(sku,section,gender,size):
     srclocation = "src="
     firsturl = htmlimagestr.find(srclocation) + 5
     secondurl = len(htmlimagestr) - 1
-    url = htmlimagestr[firsturl:secondurl]
+    imageurl = htmlimagestr[firsturl:secondurl]
 
     # Find sizes. Example dictionary [{"availableSizesIds":[{"id":2,"quantity":1}]
     html_sizestr = '[{"availableSizesIds":['
@@ -163,7 +163,7 @@ def get_yoox_item(sku,section,gender,size):
         if s.get("id") == sizeid:
             quantity = s.get("quantity")
     # export this as a dictionary
-    result = {"item": description, "url": url, "price": price, "size": size, "quantity": quantity, "section": section, "gender": gender, "sku": sku}
+    result = {"item": description, "url": url, "price": price, "size": size, "quantity": quantity, "section": section, "gender": gender, "sku": sku, "imageurl": imageurl}
 
     return result
 
@@ -218,6 +218,7 @@ def update_yoox_csv(filename):
             item[8] = updateditem.get("price")
             item[9] = updateditem.get("price")
             item[10] = updateditem.get("price")
+            item[11] = updateditem.get("url")
         else:
             if float(itemprice) != updateditem.get("price"):
                 print("prices aren't the same")
@@ -264,6 +265,12 @@ def add_yoox_item_to_track(sku,section,gender,size):
     newrow.append(newitem.get("section"))
     newrow.append(newitem.get("gender"))
     newrow.append(newitem.get("sku"))
+    # Add empty rows for price changes
+    i = 4
+    while i > 1:
+        newrow.append("")
+        i = i - 1
+    newrow.append(newitem.get("imageurl"))
     yooxlist = utils.import_csv("store-csvs/yoox.csv")
     yooxlist.append(newrow)
     utils.export_csv(yooxlist,"store-csvs/yoox.csv")
