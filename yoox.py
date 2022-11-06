@@ -158,10 +158,12 @@ def get_yoox_item(sku,section,gender,size):
     sizelistlast = iteminfo[sizelistfirst:].find("]")
     sizes = iteminfo[sizelistfirst + 22 :sizelistfirst + sizelistlast + 1]
     sizelist = list(eval(sizes))
+    print(sizelist)
     quantity = 0
     for s in sizelist:
         if s.get("id") == sizeid:
             quantity = s.get("quantity")
+            print("quantity is: " + str(quantity) )
     # export this as a dictionary
     result = {"item": description, "url": url, "price": price, "size": size, "quantity": quantity, "section": section, "gender": gender, "sku": sku, "imageurl": imageurl}
 
