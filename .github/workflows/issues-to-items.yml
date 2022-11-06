@@ -34,7 +34,7 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
           git fetch
-          git checkout gh-pages
-          git add .
+          git checkout -b "gh-pages"
+          git add store-csvs/*
           git commit -m "generated"
-          git push -u origin gh-pages
+          git push -u origin "gh-pages"
