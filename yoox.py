@@ -33,93 +33,14 @@ def get_yoox_item(sku,section,gender,size):
     Parameter gender: men or women are valid.
     Parameter size: Size of the item. If it is shoes, 6-13US are valid. If it's clothing, XXS-XXL, and if it's pants, XXS-XXL or 28-36.
     """
-    # xxxs = 1, xxs= 2, xs = 3, s=4, m=5, l=6
-    # shoe sizes
-    # id 3 is 6, 4 is 6.5, 5 is 7, 6 is 7.5, 7 is 8, 8 is 8.5, 9 is 9, 10 is 9.5, 11 is 10
-    # pants size
-    # id 4 s 30, id 5 is 31, id 6 is 32
     print(sku)
     print(section)
     print(gender)
     print(size)
     print(type(size))
     print(str(is_number(size)))
-    if is_number(size) == True:
-        print("it is a number")
-        # Shoe sizes are under 15
-        if float(size) < 16.0:
-            size = float(size)
-            print(str(size))
-            if size == 6:
-                sizeid = 3
-            elif size == 6.5:
-                sizeid = 4 
-            elif size == 7:
-                sizeid = 5
-            elif size == 7.5:
-                sizeid = 6
-            elif size == 8:
-                sizeid = 7
-            elif size == 8.5:
-                sizeid = 8
-            elif size == 9:
-                sizeid = 9
-            elif size == 9.5:
-                sizeid = 10
-            elif size == 10:
-                sizeid = 11
-            elif size == 10.5:
-                sizeid = 12
-            elif size == 11:
-                sizeid = 13
-            elif size == 11.5:
-                sizeid = 14
-            elif size == 12:
-                sizeid = 15
-            elif size == 12.5:
-                sizeid = 16
-            elif size == 13:
-                sizeid = 17
-        # pants sizes are usually start at 28 and up
-        if float(size) > 25.0:
-            size = float(size)
-            # Very odd but size 26 has an id of 10
-            if size == 26:
-                sizeid = 10
-            elif size == 28:
-                sizeid = 1
-            elif size == 30:
-                sizeid = 2
-            elif size == 32:
-                sizeid = 3
-            elif size == 34:
-                sizeid = 4
-            elif size == 36:
-                sizeid = 5
-            elif size == 38:
-                sizeid = 6
-    elif size.isalpha() == True:
-        if size == "XXXS":
-            sizeid = 1
-        elif size == "XXS":
-            sizeid = 2
-        elif size == "XS":
-            sizeid = 3
-        elif size == "S":
-            sizeid = 4
-        elif size == "M":
-            sizeid = 5
-        elif size == "L":
-            sizeid = 6
-        elif size == "XL":
-            sizeid = 7
-        elif size == "XXL":
-            sizeid = 8
-    #else:
-        # -1 is as if the size doesn't exist.
-        #sizeid = -1
-    print(str(sizeid))
-    url = "https://www.yoox.com/us/" + sku + "/item#dept=" + section + gender + "&sizeid=" + str(sizeid)
+
+    url = "https://www.yoox.com/us/" + sku + "/item#dept=" + section + gender
     header={'User-Agent': 'Mozilla/5.0'}
 
     item = requests.get(url,headers=header)
@@ -151,6 +72,28 @@ def get_yoox_item(sku,section,gender,size):
     firsturl = htmlimagestr.find(srclocation) + 5
     secondurl = len(htmlimagestr) - 1
     imageurl = htmlimagestr[firsturl:secondurl]
+
+    # Use "sizeGuide": to find what sizes are available and what the sizeid is
+    # '"breadcrumbs"' is what the next section is
+    # Use rfind since there is a sizeguide section before this
+    query_str = "querystring"
+    query_str_offset = len(query_str)
+    query_str_firstdigit = iteminfo.find(query_str) + query_str_offset
+    query_snippet = iteminfo[query_str_firstdigit:]
+    sizes_str = "sizes"
+    sizes_str_offset = len(sizes_str)
+    sizeslist_firstdigit = query_snippet.find(sizes_str)
+    sizeslist_lastdigit = query_snippet[sizeslist_firstdigit:].find("]")
+    sizeslist = query_snippet[sizeslist_firstdigit + sizes_str_offset + 2 :sizeslist_firstdigit + sizeslist_lastdigit + 1]
+    # Some boolean True and False are lowercase
+    sizeslist = sizeslist.replace("true", "True")
+    sizeslist = sizeslist.replace("false", "False")
+    sizeslist = eval(sizeslist)
+    for si in sizeslist:
+        sizetocheck = si.get("default").get("text")
+        if sizetocheck == size:
+            sizeid = si.get("id")
+            print("id found:" + str(sizeid))
 
     # Find sizes. Example dictionary [{"availableSizesIds":[{"id":2,"quantity":1}]
     html_sizestr = '[{"availableSizesIds":['
