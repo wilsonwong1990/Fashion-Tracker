@@ -170,6 +170,8 @@ def update_yoox_csv(filename):
             item[10] = updateditem.get("price")
             item[11] = updateditem.get("url")
         else:
+            # remove any commas
+            itemprice = itemprice.replace(",","")
             if float(itemprice) != updateditem.get("price"):
                 print("prices aren't the same")
                 currentprice = updateditem.get("price")
