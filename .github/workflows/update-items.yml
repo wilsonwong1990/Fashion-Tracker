@@ -36,3 +36,5 @@ jobs:
           git add store-csvs/*
           git commit -m "generated"
           git push -u origin "gh-pages"
+      continue-on-error: true
+
