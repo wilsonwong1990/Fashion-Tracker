@@ -148,8 +148,11 @@ def update_yoox_csv(filename):
             itemhighestprice = item[10]
         except:
             item.append("")
-        if type(itemsize) == float:
-            itemsize = int(itemsize)
+        try:
+            itemsize = float(itemsize)
+            itemsize = str(int(itemsize))
+        except:
+            itemsize = itemsize
         updateditem = get_yoox_item(itemsku,itemsection,itemgender,itemsize)
        # Check if description is empty. if it is, then this is a new item 
         if itemdescription == "":
