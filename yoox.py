@@ -183,10 +183,10 @@ def update_yoox_csv(filename):
                 else:
                     # If lastprice isn't empty, move the price to this
                     item[8] = item[2]
-                if item[9] == "":
-                    item[9] = currentprice
-                if item[10] == "":
-                    item[10] = currentprice
+                #if item[9] == "":
+                #    item[9] = currentprice
+                #if item[10] == "":
+                #    item[10] = currentprice
                 if currentprice < float(item[9]):
                     item[9] = currentprice
                 if currentprice > float(item[10]):
@@ -219,10 +219,10 @@ def add_yoox_item_to_track(sku,section,gender,size):
     newrow.append(newitem.get("section"))
     newrow.append(newitem.get("gender"))
     newrow.append(newitem.get("sku"))
-    # Add empty rows for price changes
+    # Add current price for price changes
     i = 4
     while i > 1:
-        newrow.append("")
+        newrow.append(newitem.get("price"))
         i = i - 1
     newrow.append(newitem.get("imageurl"))
     yooxlist = utils.import_csv("store-csvs/yoox.csv")
