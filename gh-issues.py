@@ -29,7 +29,7 @@ issues = repo.get_issues()
 #issues[0].edit(state='closed')
 
 for i in issues:
-    if "new item" in i.labels:
+    if "new item" in str(i.labels):
         body = i.body    
         print("body is:" + body)
         bodylist = body.split("\n")
