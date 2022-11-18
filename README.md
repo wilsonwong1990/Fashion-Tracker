@@ -33,8 +33,8 @@ In the same format as above, an issue is opened via Slack which then triggers th
 
 ## To Do
 
-* [ ] Fix quantity checker in yoox.py. Currently always reports 1
-* [ ] Add GitHub Action to update prices periodically
+* [x] Fix quantity checker in yoox.py. Currently always reports 1
+* [x] Add GitHub Action to update prices periodically
 * [ ] Add a remove item function or auto remove when quantity drops to 0
 * [ ] Only trigger the Add Item Action when the label is `new item`
 
