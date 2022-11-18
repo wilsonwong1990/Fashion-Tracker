@@ -4,7 +4,7 @@ Utilizing GitHub Actions and GitHub Pages to query for a list of items on variou
 
 Currently works for:
 
-    - Yoox.com
+* Yoox.com
 
 ## Intro
 
