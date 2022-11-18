@@ -26,7 +26,7 @@ print("section is:" + section)
 size = bodylist[3]
 print("size is:" + size)
 yoox.add_yoox_item_to_track(sku,section,gender,size)
-i.edit(state='closed')
+issues[0].edit(state='closed')
 
     
     
