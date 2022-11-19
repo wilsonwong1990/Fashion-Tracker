@@ -52,6 +52,6 @@ for item in yooxlist:
     elif itemprice < itemlastprice:
         message = "Lower price detected" + '\n' + "Item: " + str(itemdescription) + '\n' + "Current Price: " + str(itemprice) + '\n' + "Last Price: " + str(itemlastprice) + '\n' + str(url)
     # Debugging test
-    else:
-        message = "Testing ignore" + '\n' + "Item: " + str(itemdescription) + '\n' + "Current Price: " + str(itemprice) + '\n' + "Last Price: " + str(itemlastprice) + '\n' + str(url)
+    #else:
+    #    message = "Testing ignore" + '\n' + "Item: " + str(itemdescription) + '\n' + "Current Price: " + str(itemprice) + '\n' + "Last Price: " + str(itemlastprice) + '\n' + str(url)
     send_slack(message)
