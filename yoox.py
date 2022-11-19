@@ -45,70 +45,74 @@ def get_yoox_item(sku,section,gender,size):
 
     item = requests.get(url,headers=header)
     iteminfo = str(item.content)
+    # Check if it is sold out. If not, proceed to except to create the dictionary.
+    try:
+        if 'ItemSoldoutInfo_title__y8KTH">SOLD OUT' in iteminfo:
+            result = "soldout"
+    except:
+        # Search the html content, find the class before the price, and the code after it to split the content for the price.
+        html_pricestr = '</div><div class="MuiTitle4-title4 ItemInfo_currentPrice__n4v78"><span class=""><span>$'
+        pricestroffset = len(html_pricestr)
+        pricefirstdigit = iteminfo.find(html_pricestr) + pricestroffset
+        html_pricestrlast = '</span></span></div></div></div></div></div><div class="item_color'
+        pricelastdigit = iteminfo.find(html_pricestrlast)
+        price = iteminfo[pricefirstdigit:pricelastdigit]
+        price = price.strip()
 
-    # Search the html content, find the class before the price, and the code after it to split the content for the price.
-    html_pricestr = '</div><div class="MuiTitle4-title4 ItemInfo_currentPrice__n4v78"><span class=""><span>$'
-    pricestroffset = len(html_pricestr)
-    pricefirstdigit = iteminfo.find(html_pricestr) + pricestroffset
-    html_pricestrlast = '</span></span></div></div></div></div></div><div class="item_color'
-    pricelastdigit = iteminfo.find(html_pricestrlast)
-    price = iteminfo[pricefirstdigit:pricelastdigit]
-    price = price.strip()
+        # Search the html content, find the string before the image and it's description, and the code after.
+        html_imagestr = '<span style="cursor:zoom-in"><img alt='
+        imageoffset = len(html_imagestr)
+        imagefirstdigit = iteminfo.find(html_imagestr) + imageoffset
+        html_imagestrlast = 'style="width:100%" width="387" height="490"'
+        imagelastdigit = iteminfo.find(html_imagestrlast)
+        htmlimagestr = iteminfo[imagefirstdigit:imagelastdigit]
+        htmlimagestr = htmlimagestr.strip()
+        # Example string: "OFF-WHITE™ T-shirt Red 100% Cotton" src="https://www.yoox.com/images/items/12/12878834OO_14_f.jpg?impolicy=crop&amp;width=387&amp;height=490"
+        # The name of the item, find first " then find second "
+        firstcolon = htmlimagestr.find('"')
+        secondcolon = htmlimagestr[1:].find('"')
+        description = htmlimagestr[firstcolon + 1:secondcolon + 1]
+        srclocation = "src="
+        firsturl = htmlimagestr.find(srclocation) + 5
+        secondurl = len(htmlimagestr) - 1
+        imageurl = htmlimagestr[firsturl:secondurl]
 
-    # Search the html content, find the string before the image and it's description, and the code after.
-    html_imagestr = '<span style="cursor:zoom-in"><img alt='
-    imageoffset = len(html_imagestr)
-    imagefirstdigit = iteminfo.find(html_imagestr) + imageoffset
-    html_imagestrlast = 'style="width:100%" width="387" height="490"'
-    imagelastdigit = iteminfo.find(html_imagestrlast)
-    htmlimagestr = iteminfo[imagefirstdigit:imagelastdigit]
-    htmlimagestr = htmlimagestr.strip()
-    # Example string: "OFF-WHITE™ T-shirt Red 100% Cotton" src="https://www.yoox.com/images/items/12/12878834OO_14_f.jpg?impolicy=crop&amp;width=387&amp;height=490"
-    # The name of the item, find first " then find second "
-    firstcolon = htmlimagestr.find('"')
-    secondcolon = htmlimagestr[1:].find('"')
-    description = htmlimagestr[firstcolon + 1:secondcolon + 1]
-    srclocation = "src="
-    firsturl = htmlimagestr.find(srclocation) + 5
-    secondurl = len(htmlimagestr) - 1
-    imageurl = htmlimagestr[firsturl:secondurl]
+        # Use "sizeGuide": to find what sizes are available and what the sizeid is
+        # '"breadcrumbs"' is what the next section is
+        # Use rfind since there is a sizeguide section before this
+        query_str = "querystring"
+        query_str_offset = len(query_str)
+        query_str_firstdigit = iteminfo.find(query_str) + query_str_offset
+        query_snippet = iteminfo[query_str_firstdigit:]
+        sizes_str = "sizes"
+        sizes_str_offset = len(sizes_str)
+        sizeslist_firstdigit = query_snippet.find(sizes_str)
+        sizeslist_lastdigit = query_snippet[sizeslist_firstdigit:].find("]")
+        sizeslist = query_snippet[sizeslist_firstdigit + sizes_str_offset + 2 :sizeslist_firstdigit + sizeslist_lastdigit + 1]
+        # Some boolean True and False are lowercase
+        sizeslist = sizeslist.replace("true", "True")
+        sizeslist = sizeslist.replace("false", "False")
+        sizeslist = eval(sizeslist)
+        for si in sizeslist:
+            sizetocheck = si.get("default").get("text")
+            if sizetocheck == size:
+                sizeid = si.get("id")
+                print("id found:" + str(sizeid))
 
-    # Use "sizeGuide": to find what sizes are available and what the sizeid is
-    # '"breadcrumbs"' is what the next section is
-    # Use rfind since there is a sizeguide section before this
-    query_str = "querystring"
-    query_str_offset = len(query_str)
-    query_str_firstdigit = iteminfo.find(query_str) + query_str_offset
-    query_snippet = iteminfo[query_str_firstdigit:]
-    sizes_str = "sizes"
-    sizes_str_offset = len(sizes_str)
-    sizeslist_firstdigit = query_snippet.find(sizes_str)
-    sizeslist_lastdigit = query_snippet[sizeslist_firstdigit:].find("]")
-    sizeslist = query_snippet[sizeslist_firstdigit + sizes_str_offset + 2 :sizeslist_firstdigit + sizeslist_lastdigit + 1]
-    # Some boolean True and False are lowercase
-    sizeslist = sizeslist.replace("true", "True")
-    sizeslist = sizeslist.replace("false", "False")
-    sizeslist = eval(sizeslist)
-    for si in sizeslist:
-        sizetocheck = si.get("default").get("text")
-        if sizetocheck == size:
-            sizeid = si.get("id")
-            print("id found:" + str(sizeid))
-
-    # Find sizes. Example dictionary [{"availableSizesIds":[{"id":2,"quantity":1}]
-    html_sizestr = '[{"availableSizesIds":['
-    sizelistfirst = iteminfo.find(html_sizestr)
-    sizelistlast = iteminfo[sizelistfirst:].find("]")
-    sizes = iteminfo[sizelistfirst + 22 :sizelistfirst + sizelistlast + 1]
-    sizelist = list(eval(sizes))
-    print(sizelist)
-    quantity = 0
-    for s in sizelist:
-        if s.get("id") == sizeid:
-            quantity = s.get("quantity")
-            print("quantity is: " + str(quantity) )
-    # export this as a dictionary
-    result = {"item": description, "url": url, "price": price, "size": size, "quantity": quantity, "section": section, "gender": gender, "sku": sku, "imageurl": imageurl}
+        # Find sizes. Example dictionary [{"availableSizesIds":[{"id":2,"quantity":1}]
+        html_sizestr = '[{"availableSizesIds":['
+        sizelistfirst = iteminfo.find(html_sizestr)
+        sizelistlast = iteminfo[sizelistfirst:].find("]")
+        sizes = iteminfo[sizelistfirst + 22 :sizelistfirst + sizelistlast + 1]
+        sizelist = list(eval(sizes))
+        #print(sizelist)
+        quantity = 0
+        for s in sizelist:
+            if s.get("id") == sizeid:
+                quantity = s.get("quantity")
+                print("quantity is: " + str(quantity) )
+        # export this as a dictionary
+        result = {"item": description, "url": url, "price": price, "size": size, "quantity": quantity, "section": section, "gender": gender, "sku": sku, "imageurl": imageurl}
 
     return result
 
@@ -154,45 +158,48 @@ def update_yoox_csv(filename):
         except:
             itemsize = itemsize
         updateditem = get_yoox_item(itemsku,itemsection,itemgender,itemsize)
-       # Check if description is empty. if it is, then this is a new item 
-        if itemdescription == "":
-            print("description is empty")
-            item[0] = updateditem.get("item")
-            item[1] = updateditem.get("url")
-            item[2] = updateditem.get("price")
-            item[3] = updateditem.get("size")
-            item[4] = updateditem.get("quantity")
-            item[5] = updateditem.get("section")
-            item[6] = updateditem.get("gender")
-            item[7] = updateditem.get("sku")
-            item[8] = updateditem.get("price")
-            item[9] = updateditem.get("price")
-            item[10] = updateditem.get("price")
-            item[11] = updateditem.get("url")
+        if updateditem == "soldout":
+            item[4] = 0
         else:
-            # remove any commas
-            itemprice = itemprice.replace(",","")
-            currentprice = updateditem.get("price")
-            currentprice = currentprice.replace(",","")
-            if float(itemprice) != float(currentprice):
-                print("prices aren't the same")
-                currentprice = float(currentprice)
-                print(str(currentprice))
-                if item[8] == "":
-                    item[8] = currentprice
-                else:
-                    # If lastprice isn't empty, move the price to this
-                    item[8] = item[2]
-                #if item[9] == "":
-                #    item[9] = currentprice
-                #if item[10] == "":
-                #    item[10] = currentprice
-                if currentprice < float(item[9]):
-                    item[9] = currentprice
-                if currentprice > float(item[10]):
-                    item[10] = currentprice
-                item[2] = currentprice
-            item[4] = updateditem.get("quantity")
+           # Check if description is empty. if it is, then this is a new item 
+            if itemdescription == "":
+                print("description is empty")
+                item[0] = updateditem.get("item")
+                item[1] = updateditem.get("url")
+                item[2] = updateditem.get("price")
+                item[3] = updateditem.get("size")
+                item[4] = updateditem.get("quantity")
+                item[5] = updateditem.get("section")
+                item[6] = updateditem.get("gender")
+                item[7] = updateditem.get("sku")
+                item[8] = updateditem.get("price")
+                item[9] = updateditem.get("price")
+                item[10] = updateditem.get("price")
+                item[11] = updateditem.get("url")
+            else:
+                # remove any commas
+                itemprice = itemprice.replace(",","")
+                currentprice = updateditem.get("price")
+                currentprice = currentprice.replace(",","")
+                if float(itemprice) != float(currentprice):
+                    print("prices aren't the same")
+                    currentprice = float(currentprice)
+                    print(str(currentprice))
+                    if item[8] == "":
+                        item[8] = currentprice
+                    else:
+                        # If lastprice isn't empty, move the price to this
+                        item[8] = item[2]
+                    #if item[9] == "":
+                    #    item[9] = currentprice
+                    #if item[10] == "":
+                    #    item[10] = currentprice
+                    if currentprice < float(item[9]):
+                        item[9] = currentprice
+                    if currentprice > float(item[10]):
+                        item[10] = currentprice
+                    item[2] = currentprice
+                item[4] = updateditem.get("quantity")
     for item in yooxlist:
         print(item)
     utils.export_csv(yooxlist,filename)
