@@ -45,11 +45,10 @@ def get_yoox_item(sku,section,gender,size):
 
     item = requests.get(url,headers=header)
     iteminfo = str(item.content)
-    # Check if it is sold out. If not, proceed to except to create the dictionary.
-    try:
-        if 'ItemSoldoutInfo_title__y8KTH">SOLD OUT' in iteminfo:
+    # Check if it is sold out. If not, proceed to except to create the dictionary.    
+    if 'ItemSoldoutInfo_title__y8KTH">SOLD OUT' in iteminfo:
             result = "soldout"
-    except:
+    else:
         # Search the html content, find the class before the price, and the code after it to split the content for the price.
         html_pricestr = '</div><div class="MuiTitle4-title4 ItemInfo_currentPrice__n4v78"><span class=""><span>$'
         pricestroffset = len(html_pricestr)
