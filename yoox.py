@@ -92,6 +92,7 @@ def get_yoox_item(sku,section,gender,size):
         sizeslist = sizeslist.replace("true", "True")
         sizeslist = sizeslist.replace("false", "False")
         sizeslist = eval(sizeslist)
+        print(str(sizelist))
         for si in sizeslist:
             sizetocheck = si.get("default").get("text")
             if sizetocheck == size:
