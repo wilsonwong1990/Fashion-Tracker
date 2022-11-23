@@ -93,6 +93,8 @@ def get_yoox_item(sku,section,gender,size):
         sizeslist = sizeslist.replace("false", "False")
         sizeslist = eval(sizeslist)
         print(str(sizeslist))
+        # set sizeid to something extreme in case the size is sold out
+        sizeid = 1000
         for si in sizeslist:
             sizetocheck = si.get("default").get("text")
             if sizetocheck == size:
