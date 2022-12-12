@@ -183,6 +183,10 @@ def update_yoox_csv(filename):
                 itemprice = itemprice.replace(",","")
                 currentprice = updateditem.get("price")
                 currentprice = currentprice.replace(",","")
+                lowestprice = item[9]
+                lowestprice = lowestprice.replace(",","")
+                highestprice = item[10]
+                highestprice = highestprice.replace(",","")
                 if float(itemprice) != float(currentprice):
                     print("prices aren't the same")
                     currentprice = float(currentprice)
@@ -196,9 +200,9 @@ def update_yoox_csv(filename):
                     #    item[9] = currentprice
                     #if item[10] == "":
                     #    item[10] = currentprice
-                    if float(currentprice) < float(item[9]):
+                    if float(currentprice) < float(lowestprice):
                         item[9] = currentprice
-                    if float(currentprice) > float(item[10]):
+                    if float(currentprice) > float(highestprice):
                         item[10] = currentprice
                     item[2] = currentprice
                 item[4] = updateditem.get("quantity")
