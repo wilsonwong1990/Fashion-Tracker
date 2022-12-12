@@ -48,10 +48,10 @@ for item in yooxlist:
     itemlowprice = itemlowprice.strip("'")
     
     if (itemprice == itemlowprice) and (itemprice != itemlastprice):
-        message = "Lowest price detected" + '\n' + "Item: " + str(itemdescription) + '\n' + "Current Price: " + str(itemprice) + '\n' + "Last Price: " + str(itemlastprice) + '\n' + str(url)
+        message = "Lowest price detected" + '\n' + "Item: " + str(itemdescription) + '\n' + "Current Price: " + str(itemprice) + '\n' + "Last Price: " + str(itemlastprice) + '\n' + str(itemurl)
         send_slack(message)
     elif itemprice < itemlastprice:
-        message = "Lower price detected" + '\n' + "Item: " + str(itemdescription) + '\n' + "Current Price: " + str(itemprice) + '\n' + "Last Price: " + str(itemlastprice) + '\n' + str(url)
+        message = "Lower price detected" + '\n' + "Item: " + str(itemdescription) + '\n' + "Current Price: " + str(itemprice) + '\n' + "Last Price: " + str(itemlastprice) + '\n' + str(itemurl)
         send_slack(message)
     # Debugging test
     #else:
