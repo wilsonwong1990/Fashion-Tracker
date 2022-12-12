@@ -196,9 +196,9 @@ def update_yoox_csv(filename):
                     #    item[9] = currentprice
                     #if item[10] == "":
                     #    item[10] = currentprice
-                    if currentprice < float(item[9]):
+                    if float(currentprice) < float(item[9]):
                         item[9] = currentprice
-                    if currentprice > float(item[10]):
+                    if float(currentprice) > float(item[10]):
                         item[10] = currentprice
                     item[2] = currentprice
                 item[4] = updateditem.get("quantity")
