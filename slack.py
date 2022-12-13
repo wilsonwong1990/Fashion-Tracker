@@ -48,7 +48,7 @@ for item in yooxlist:
     itemlastprice = itemlastprice.strip("'")
     itemlowprice = item[9]
     itemlowprice = itemlowprice.strip("'")
-    if (item not in oldlist):
+    if (str(item) not in str(oldlist)):
         if (itemprice == itemlowprice) and (itemprice != itemlastprice):
             print(itemdescription + " is not in oldlist")
             print(item)
