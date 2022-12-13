@@ -51,10 +51,12 @@ for item in yooxlist:
 
     if (itemprice == itemlowprice) and (itemprice != itemlastprice) and (item not in oldlist):
         print(itemdescription + " is not in oldlist")
+        print(item)
         message = "Lowest price detected" + '\n' + "Item: " + str(itemdescription) + '\n' + "Current Price: " + str(itemprice) + '\n' + "Last Price: " + str(itemlastprice) + '\n' + str(itemurl)
         send_slack(message)
     elif itemprice < itemlastprice:
         print(itemdescription + " is not in oldlist")
+        print(item)
         message = "Lower price detected" + '\n' + "Item: " + str(itemdescription) + '\n' + "Current Price: " + str(itemprice) + '\n' + "Last Price: " + str(itemlastprice) + '\n' + str(itemurl)
         send_slack(message)
     # Debugging test
