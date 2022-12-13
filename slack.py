@@ -28,6 +28,7 @@ def send_slack(message):
 
 yooxlist = utils.import_csv("store-csvs/yoox.csv")
 oldlist = utils.import_csv("store-csvs/yoox-old.csv")
+print(oldlist)
 
 for item in yooxlist:
     itemdescription = item[0]
@@ -49,9 +50,11 @@ for item in yooxlist:
     itemlowprice = itemlowprice.strip("'")
 
     if (itemprice == itemlowprice) and (itemprice != itemlastprice) and (item not in oldlist):
+        print(itemdescription + " is not in oldlist")
         message = "Lowest price detected" + '\n' + "Item: " + str(itemdescription) + '\n' + "Current Price: " + str(itemprice) + '\n' + "Last Price: " + str(itemlastprice) + '\n' + str(itemurl)
         send_slack(message)
     elif itemprice < itemlastprice:
+        print(itemdescription + " is not in oldlist")
         message = "Lower price detected" + '\n' + "Item: " + str(itemdescription) + '\n' + "Current Price: " + str(itemprice) + '\n' + "Last Price: " + str(itemlastprice) + '\n' + str(itemurl)
         send_slack(message)
     # Debugging test
