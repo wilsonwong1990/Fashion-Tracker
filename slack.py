@@ -48,18 +48,18 @@ for item in yooxlist:
     itemlastprice = itemlastprice.strip("'")
     itemlowprice = item[9]
     itemlowprice = itemlowprice.strip("'")
-
-    if (itemprice == itemlowprice) and (itemprice != itemlastprice) and (item not in oldlist):
-        print(itemdescription + " is not in oldlist")
-        print(item)
-        message = "Lowest price detected" + '\n' + "Item: " + str(itemdescription) + '\n' + "Current Price: " + str(itemprice) + '\n' + "Last Price: " + str(itemlastprice) + '\n' + str(itemurl)
-        send_slack(message)
-    elif itemprice < itemlastprice:
-        print(itemdescription + " is not in oldlist")
-        print(item)
-        message = "Lower price detected" + '\n' + "Item: " + str(itemdescription) + '\n' + "Current Price: " + str(itemprice) + '\n' + "Last Price: " + str(itemlastprice) + '\n' + str(itemurl)
-        send_slack(message)
-    # Debugging test
-    #else:
-    #    message = "Testing ignore" + '\n' + "Item: " + str(itemdescription) + '\n' + "Current Price: " + str(itemprice) + '\n' + "Last Price: " + str(itemlastprice) + '\n' + str(url)
+    if (item not in oldlist):
+        if (itemprice == itemlowprice) and (itemprice != itemlastprice):
+            print(itemdescription + " is not in oldlist")
+            print(item)
+            message = "Lowest price detected" + '\n' + "Item: " + str(itemdescription) + '\n' + "Current Price: " + str(itemprice) + '\n' + "Last Price: " + str(itemlastprice) + '\n' + str(itemurl)
+            send_slack(message)
+        elif itemprice < itemlastprice:
+            print(itemdescription + " is not in oldlist")
+            print(item)
+            message = "Lower price detected" + '\n' + "Item: " + str(itemdescription) + '\n' + "Current Price: " + str(itemprice) + '\n' + "Last Price: " + str(itemlastprice) + '\n' + str(itemurl)
+            send_slack(message)
+        # Debugging test
+        #else:
+        #    message = "Testing ignore" + '\n' + "Item: " + str(itemdescription) + '\n' + "Current Price: " + str(itemprice) + '\n' + "Last Price: " + str(itemlastprice) + '\n' + str(url)
     
