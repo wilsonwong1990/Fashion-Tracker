@@ -69,8 +69,8 @@ def get_yoox_item(sku,section,gender,size):
         # Example string: "OFF-WHITE™ T-shirt Red 100% Cotton" src="https://www.yoox.com/images/items/12/12878834OO_14_f.jpg?impolicy=crop&amp;width=387&amp;height=490"
         # The name of the item, find first " then find second "
         firstcolon = htmlimagestr.find('"')
-        secondcolon = htmlimagestr[1:].find('"')
-        description = htmlimagestr[firstcolon + 1:secondcolon + 1]
+        secondcolon = htmlimagestr.find('"', firstcolon + 1)
+        description = htmlimagestr[firstcolon + 1:secondcolon]
         srclocation = "src="
         firsturl = htmlimagestr.find(srclocation) + 5
         secondurl = len(htmlimagestr) - 1
@@ -86,8 +86,11 @@ def get_yoox_item(sku,section,gender,size):
         sizes_str = "sizes"
         sizes_str_offset = len(sizes_str)
         sizeslist_firstdigit = query_snippet.find(sizes_str)
-        sizeslist_lastdigit = query_snippet[sizeslist_firstdigit:].find("]")
-        sizeslist = query_snippet[sizeslist_firstdigit + sizes_str_offset + 2 :sizeslist_firstdigit + sizeslist_lastdigit + 1]
+        # Find the end of the sizes array
+        sizes_start = sizeslist_firstdigit + sizes_str_offset + 2  # +2 for '":['
+        # Search for ']' from the sizes_start position in the full query_snippet
+        sizeslist_lastdigit = query_snippet.find("]", sizes_start)
+        sizeslist = query_snippet[sizes_start:sizeslist_lastdigit]
         # Some boolean True and False are lowercase
         sizeslist = sizeslist.replace("true", "True")
         sizeslist = sizeslist.replace("false", "False")
@@ -162,6 +165,10 @@ def update_yoox_csv(filename):
         updateditem = get_yoox_item(itemsku,itemsection,itemgender,itemsize)
         if updateditem == "soldout":
             item[4] = 0
+        elif updateditem == "error":
+            # Skip updating this item if there was an error fetching
+            print(f"Skipping item {itemsku} due to fetch error")
+            continue
         else:
            # Check if description is empty. if it is, then this is a new item 
             if itemdescription == "":
@@ -183,26 +190,28 @@ def update_yoox_csv(filename):
                 itemprice = itemprice.replace(",","")
                 currentprice = updateditem.get("price")
                 currentprice = currentprice.replace(",","")
-                lowestprice = item[9]
-                lowestprice = lowestprice.replace(",","")
-                highestprice = item[10]
-                highestprice = highestprice.replace(",","")
+                lowestprice = item[9] if (item[9] and item[9] != "") else itemprice
+                lowestprice = str(lowestprice).replace(",","")
+                highestprice = item[10] if (item[10] and item[10] != "") else itemprice
+                highestprice = str(highestprice).replace(",","")
                 if float(itemprice) != float(currentprice):
                     print("prices aren't the same")
-                    currentprice = float(currentprice)
-                    print(str(currentprice))
+                    price_as_float = float(currentprice)
+                    print(str(price_as_float))
                     if item[8] == "":
                         item[8] = currentprice
                     else:
                         # If lastprice isn't empty, move the price to this
                         item[8] = item[2]
-                    #if item[9] == "":
-                    #    item[9] = currentprice
-                    #if item[10] == "":
-                    #    item[10] = currentprice
-                    if float(currentprice) < float(lowestprice):
+                    if item[9] == "":
                         item[9] = currentprice
-                    if float(currentprice) > float(highestprice):
+                        lowestprice = currentprice
+                    if item[10] == "":
+                        item[10] = currentprice
+                        highestprice = currentprice
+                    if price_as_float < float(lowestprice):
+                        item[9] = currentprice
+                    if price_as_float > float(highestprice):
                         item[10] = currentprice
                     item[2] = currentprice
                 item[4] = updateditem.get("quantity")
@@ -232,11 +241,10 @@ def add_yoox_item_to_track(sku,section,gender,size):
     newrow.append(newitem.get("section"))
     newrow.append(newitem.get("gender"))
     newrow.append(newitem.get("sku"))
-    # Add current price for price changes
-    i = 4
-    while i > 1:
-        newrow.append(newitem.get("price"))
-        i = i - 1
+    # Add current price for Last Price, Lowest Price, and Highest Price tracking
+    newrow.append(newitem.get("price"))  # Last Price
+    newrow.append(newitem.get("price"))  # Lowest Price
+    newrow.append(newitem.get("price"))  # Highest Price
     newrow.append(newitem.get("imageurl"))
     yooxlist = utils.import_csv("store-csvs/yoox.csv")
     yooxlist.append(newrow)
