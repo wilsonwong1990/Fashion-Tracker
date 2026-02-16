@@ -199,20 +199,25 @@ def update_yoox_csv(filename):
                     price_as_float = float(currentprice)
                     print(str(price_as_float))
                     if item[8] == "":
-                        item[8] = currentprice
-                    else:
-                        # If lastprice isn't empty, move the price to this
                         item[8] = item[2]
+                    else:
+                        # If lastprice isn't empty, move the current price to lastprice before updating
+                        item[8] = item[2]
+                    # Initialize lowest/highest price tracking if not set
                     if item[9] == "":
-                        item[9] = currentprice
-                        lowestprice = currentprice
+                        # Start tracking from the old price
+                        item[9] = itemprice
+                        lowestprice = itemprice
                     if item[10] == "":
-                        item[10] = currentprice
-                        highestprice = currentprice
+                        # Start tracking from the old price
+                        item[10] = itemprice
+                        highestprice = itemprice
+                    # Update lowest/highest if new price is lower/higher
                     if price_as_float < float(lowestprice):
                         item[9] = currentprice
                     if price_as_float > float(highestprice):
                         item[10] = currentprice
+                    # Update current price
                     item[2] = currentprice
                 item[4] = updateditem.get("quantity")
     for item in yooxlist:
